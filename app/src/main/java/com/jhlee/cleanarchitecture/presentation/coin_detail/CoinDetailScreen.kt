@@ -1,6 +1,7 @@
 package com.jhlee.cleanarchitecture.presentation.coin_detail
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -26,8 +28,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
+import com.jhlee.cleanarchitecture.data.local.entity.DBCoin
 import com.jhlee.cleanarchitecture.presentation.coin_detail.components.CoinTag
 import com.jhlee.cleanarchitecture.presentation.coin_detail.components.TeamListItem
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CoinDetailScreen(
@@ -37,8 +42,7 @@ fun CoinDetailScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         state.coin?.let { coin ->
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(20.dp)
+                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp)
             ) {
                 item {
                     Row(
@@ -50,9 +54,31 @@ fun CoinDetailScreen(
                             style = MaterialTheme.typography.h2,
                             modifier = Modifier.weight(8f)
                         )
+
+                        Button(onClick = {
+                            DBCoin(
+                                isActive = coin.isActive,
+                                name = coin.name,
+                                rank = coin.rank,
+                                symbol = coin.symbol
+                            ).apply {
+                                viewModel.saveCoin(this)
+                            }
+                        }) {
+                            Text(text = "save")
+                        }
+                        Button(onClick = {
+                            GlobalScope.launch {
+                                Log.d("jhlee", "${viewModel.getDBCoinList()}")
+                            }
+
+
+                        }) {
+                            Text(text = "getDB")
+                        }
                         Text(
-                            text = if(coin.isActive) "active" else "inactive",
-                            color = if(coin.isActive) Color.Green else Color.Red,
+                            text = if (coin.isActive) "active" else "inactive",
+                            color = if (coin.isActive) Color.Green else Color.Red,
                             fontStyle = FontStyle.Italic,
                             textAlign = TextAlign.End,
                             modifier = Modifier
@@ -62,13 +88,11 @@ fun CoinDetailScreen(
                     }
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(
-                        text = coin.description,
-                        style = MaterialTheme.typography.body2
+                        text = coin.description, style = MaterialTheme.typography.body2
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(
-                        text = "Tags",
-                        style = MaterialTheme.typography.h3
+                        text = "Tags", style = MaterialTheme.typography.h3
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                     FlowRow(
@@ -82,15 +106,13 @@ fun CoinDetailScreen(
                     }
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(
-                        text = "Team members",
-                        style = MaterialTheme.typography.h3
+                        text = "Team members", style = MaterialTheme.typography.h3
                     )
                     Spacer(modifier = Modifier.height(15.dp))
                 }
                 items(coin.team) { teamMember ->
                     TeamListItem(
-                        teamMember = teamMember,
-                        modifier = Modifier
+                        teamMember = teamMember, modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
                     )
@@ -98,7 +120,7 @@ fun CoinDetailScreen(
                 }
             }
         }
-        if(state.error.isNotBlank()) {
+        if (state.error.isNotBlank()) {
             Text(
                 text = state.error,
                 color = MaterialTheme.colors.error,
@@ -109,7 +131,7 @@ fun CoinDetailScreen(
                     .align(Alignment.Center)
             )
         }
-        if(state.isLoading) {
+        if (state.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }

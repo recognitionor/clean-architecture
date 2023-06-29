@@ -1,5 +1,6 @@
 package com.jhlee.cleanarchitecture.presentation.coin_detail
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -7,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jhlee.cleanarchitecture.common.Constants
 import com.jhlee.cleanarchitecture.common.Resource
+import com.jhlee.cleanarchitecture.data.local.entity.DBCoin
 import com.jhlee.cleanarchitecture.domain.use_case.get_coin.GetCoinUseCase
+import com.jhlee.cleanarchitecture.domain.use_case.insert_coin.InsertCoinUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -15,7 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CoinDetailViewModel @Inject constructor(
-    private val getCoinUseCase: GetCoinUseCase, savedStateHandle: SavedStateHandle
+    private val getCoinUseCase: GetCoinUseCase,
+    private val insertCoinUseCase: InsertCoinUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = mutableStateOf(CoinDetailState())
@@ -25,6 +30,28 @@ class CoinDetailViewModel @Inject constructor(
         savedStateHandle.get<String>(Constants.PARAM_COIN_ID)?.let { coinId ->
             getCoin(coinId)
         }
+    }
+
+    fun saveCoin(coin: DBCoin) {
+        Log.d("jhlee", "saveCoin : $coin")
+        insertCoinUseCase.invoke(coin).launchIn(viewModelScope)
+    }
+
+    fun getDBCoinList() {
+        Log.d("jhlee", "CoinDetailViewModel.getDBCoinList")
+        insertCoinUseCase.getList().onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    result.data?.let {
+                        it.forEach { item ->
+                            Log.d("jhlee", "Success : $item")
+                        }
+                    }
+
+                }
+            }
+
+        }.launchIn(viewModelScope)
     }
 
     private fun getCoin(coinId: String) {

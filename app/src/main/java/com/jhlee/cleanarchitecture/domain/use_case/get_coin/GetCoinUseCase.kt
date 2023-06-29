@@ -1,6 +1,8 @@
 package com.jhlee.cleanarchitecture.domain.use_case.get_coin
 
 import com.jhlee.cleanarchitecture.common.Resource
+import com.jhlee.cleanarchitecture.data.remote.dto.CoinDetailDto
+import com.jhlee.cleanarchitecture.data.remote.dto.CoinDto
 import com.jhlee.cleanarchitecture.data.remote.dto.toCoinDetail
 import com.jhlee.cleanarchitecture.domain.model.CoinDetail
 import com.jhlee.cleanarchitecture.domain.repository.CoinRepository
@@ -11,7 +13,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GetCoinUseCase @Inject constructor(
-    private val repository: CoinRepository
+    private val repository: CoinRepository<CoinDto, CoinDetailDto>
 ) {
     operator fun invoke(coinId: String): Flow<Resource<CoinDetail>> = flow {
         try {

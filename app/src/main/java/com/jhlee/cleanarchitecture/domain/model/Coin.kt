@@ -1,5 +1,7 @@
 package com.jhlee.cleanarchitecture.domain.model
 
+import androidx.room.Entity
+
 data class Coin(
     val id: String,
     val isActive: Boolean,

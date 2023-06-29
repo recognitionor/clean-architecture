@@ -1,6 +1,9 @@
 package com.jhlee.cleanarchitecture.domain.use_case.get_coins
 
+import android.util.Log
 import com.jhlee.cleanarchitecture.common.Resource
+import com.jhlee.cleanarchitecture.data.remote.dto.CoinDetailDto
+import com.jhlee.cleanarchitecture.data.remote.dto.CoinDto
 import com.jhlee.cleanarchitecture.data.remote.dto.toCoin
 import com.jhlee.cleanarchitecture.domain.model.Coin
 import com.jhlee.cleanarchitecture.domain.repository.CoinRepository
@@ -11,9 +14,10 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GetCoinsUseCase @Inject constructor(
-    private val repository: CoinRepository
+    private val repository: CoinRepository<CoinDto, CoinDetailDto>
 ) {
     operator fun invoke(): Flow<Resource<List<Coin>>> = flow {
+        Log.d("jhlee", "GetCoinsUseCase : ${Thread.currentThread().name}")
         try {
             emit(Resource.Loading<List<Coin>>())
             val coins = repository.getCoins().map { it.toCoin() }

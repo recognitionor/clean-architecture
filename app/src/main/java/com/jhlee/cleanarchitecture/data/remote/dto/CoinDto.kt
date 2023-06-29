@@ -6,11 +6,11 @@ import com.jhlee.cleanarchitecture.domain.model.Coin
 data class CoinDto(
     val id: String,
     @SerializedName("is_active") val is_active: Boolean,
-    @SerializedName("i s_new") val is_new: Boolean,
+    @SerializedName("i s_new") val is_new: Boolean = false,
     val name: String,
     val rank: Int,
     val symbol: String,
-    val type: String
+    val type: String = ""
 )
 
 fun CoinDto.toCoin(): Coin {
