@@ -1,9 +1,6 @@
 package com.jhlee.cleanarchitecture.di
 
 import com.jhlee.cleanarchitecture.data.remote.ApiService
-import com.jhlee.cleanarchitecture.data.repository.CoinRepositoryImpl
-import com.jhlee.cleanarchitecture.domain.model.Coin
-import com.jhlee.cleanarchitecture.domain.repository.CoinRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,11 +20,4 @@ class AppModule {
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(ApiService::class.java)
     }
-
-    @Provides
-    @Singleton
-    fun provideCoinRepository(api: ApiService): CoinRepository<Coin> {
-        return CoinRepositoryImpl(api)
-    }
-
 }
